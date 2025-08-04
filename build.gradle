@@ -1,8 +1,15 @@
+plugins {
+    id "com.gradleup.shadow" version "8.3.0"
+}
+
 apply plugin: 'java'
 
 repositories {
     mavenCentral();
 }
+
+group = 'com.kumarvv.table2pojo'
+version = '1.0'
 
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
@@ -12,41 +19,11 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
     implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
-
-    // add additional db jars
-    implementation group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: '21.8.0.0'
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.31'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
+    implementation gradleApi()
 }
 
-//task fatJar(type: Jar) {
-//    manifest {
-//        attributes 'Main-Class': 'com.baeldung.fatjar.Application'
-//    }
-//    baseName = 'all-in-one-jar'
-//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-//    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-//    with jar
-//}
-
-//jar {
-//    manifest {
-//        attributes "Main-Class": "com.kumarvv.table2pojo.Table2Pojo"
-//    }
-//
-//    from {
-//        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-//    }
-//}
-
-task fatJar(type: Jar) {
+shadowJar {
     manifest {
-        attributes 'Implementation-Title': 'table2pojo',
-                'Implementation-Version': 1.0,
-                'Main-Class': 'com.kumarvv.table2pojo.Table2Pojo'
+        attributes 'Main-Class': 'com.kumarvv.table2pojo.Table2Pojo', 'Implementation-Title': 'table2pojo'
     }
-    baseName = project.name + '-all'
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
 }

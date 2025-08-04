@@ -20,6 +20,7 @@ package com.kumarvv.table2pojo;
 
 import com.kumarvv.table2pojo.core.PojoWriter;
 import com.kumarvv.table2pojo.core.TableReader;
+import com.kumarvv.table2pojo.model.ConnectionPrefs;
 import com.kumarvv.table2pojo.model.UserPrefs;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -51,6 +52,35 @@ public class Table2Pojo {
      */
     public static void main(String[] args) {
         new Table2Pojo().process(args);
+    }
+
+    public void process(UserPrefs prefs, ConnectionPrefs connectionPrefs) {
+        if (prefs == null) {
+            return;
+        }
+
+        if (!validate(prefs)) {
+            return;
+        }
+
+        long millis = System.currentTimeMillis();
+
+        info("connecting to database...");
+        Properties props = new Properties();
+        props.put("driver", connectionPrefs.getDriver());
+        props.put("url", connectionPrefs.getUrl());
+        props.put("username", connectionPrefs.getUsername());
+        props.put("password", connectionPrefs.getPassword());
+        try (Connection conn = connect(props)) {
+            millis = System.currentTimeMillis();
+            info("processing tables...");
+            start(prefs, conn);
+        } catch (Exception e) {
+            error(e.getMessage());
+        } finally {
+            long elapsed = System.currentTimeMillis() -millis;
+            info("ALL DONE! (elapsed: " + elapsed + "ms)");
+        }
     }
 
     /**
@@ -168,6 +198,10 @@ public class Table2Pojo {
     private Connection connect() throws Exception {
         Properties props = new Properties();
         props.load(new FileInputStream(getDbProperties()));
+        return connect(props);
+    }
+
+    private Connection connect(Properties props) throws Exception {
 
         String driver = props.getProperty("driver");
         String url = props.getProperty("url");

@@ -351,7 +351,7 @@ public class PojoWriter extends Thread {
      * @return
      */
     private String toMethodName(String str) {
-        return WordUtils.capitalizeFully(str, '_').replaceAll("_", "");
+        return WordUtils.capitalizeFully(str, '_', '.').replaceAll("_", "").replaceAll("\\.", "");
     }
 
     /**
